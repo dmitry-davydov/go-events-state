@@ -13,7 +13,7 @@ import (
 
 func AttachRoutes(group *echo.Group, storage *storage.Storage) {
 
-	group.GET("/event", func(c echo.Context) error {
+	group.GET("/events", func(c echo.Context) error {
 		all := storage.All()
 		var allResponse []response.Event
 
@@ -38,7 +38,7 @@ func AttachRoutes(group *echo.Group, storage *storage.Storage) {
 		resp.Map(event)
 
 		return c.JSON(http.StatusOK, echo.Map{
-			"data": event,
+			"data": resp,
 		})
 	})
 
