@@ -90,16 +90,17 @@ func (t EventStatus) MarshalJSON() ([]byte, error) {
 }
 
 type Event struct {
-	ID        string
-	Status    EventStatus
-	Type      EventType
-	CreatedAt time.Time
+	ID             string
+	Status         EventStatus
+	Type           EventType
+	CreatedAt      time.Time
+	StatusUpdatedAt time.Time
 }
 
-func (t *Event) CanFinish() bool {
-	return t.Status == EventStatusInterrupted
-}
+func (t *Event) CanFinish(interruptedValidPeriod int) bool {
 
+	return t.Status == EventStatusInterrupted && time.Now().Second() - t.StatusUpdatedAt.Second() >= interruptedValidPeriod
+}
 
 func (t *Event) SetFinishState() {
 	t.Status = EventStatusFinished
@@ -121,10 +122,10 @@ func (t *Event) SetState(newState EventStatus) {
 	if sub, ok := allowedStatuses[t.Status]; ok {
 		if _, ok := sub[newState]; ok {
 			t.Status = newState
+			t.StatusUpdatedAt = time.Now()
 		}
 	}
 }
-
 
 func generateEventId() string {
 	id, err := uuid.NewRandom()

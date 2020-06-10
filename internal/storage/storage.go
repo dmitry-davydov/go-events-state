@@ -14,13 +14,13 @@ type Storage struct {
 	mut  sync.RWMutex
 	data map[string]*models.Event
 
-	finishStateTimeout int
+	interruptedValidPeriod int
 
 	exitContext context.Context
 }
 
 func (t *Storage) finishSateRunner() {
-	ticker := time.NewTicker(time.Second * time.Duration(t.finishStateTimeout))
+	ticker := time.NewTicker(time.Second * time.Duration(t.interruptedValidPeriod))
 
 	for {
 		select {
@@ -37,7 +37,7 @@ func (t *Storage) finishSateRunner() {
 func (t *Storage) changeStates() {
 	t.mut.Lock()
 	for _, event := range t.data {
-		if !event.CanFinish() {
+		if !event.CanFinish(t.interruptedValidPeriod) {
 			continue
 		}
 
@@ -96,9 +96,9 @@ func (t *Storage) All() []*models.Event {
 }
 
 // NewStorage это "конструктор" для создания Storage
-func NewStorage(finishStateTimeout int, context context.Context) *Storage {
+func NewStorage(interruptedValidPeriod int, context context.Context) *Storage {
 	t := new(Storage)
-	t.finishStateTimeout = finishStateTimeout
+	t.interruptedValidPeriod = interruptedValidPeriod
 	t.data = make(map[string]*models.Event)
 	t.exitContext = context
 
