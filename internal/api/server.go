@@ -26,7 +26,7 @@ func CreateServer(cfg models.Configuration) {
 
 	store := storage.NewStorage(cfg.InterruptedValidPeriod, cfg.DieAppContext)
 
-	v1.New(v1Group, store)
+	v1.AttachRoutes(v1Group, store)
 
 	go func (){
 		if err := e.Start(fmt.Sprintf(":%d", cfg.HttpServerPort)); err != nil {

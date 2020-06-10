@@ -11,7 +11,7 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
-func New(group *echo.Group, storage *storage.Storage) {
+func AttachRoutes(group *echo.Group, storage *storage.Storage) {
 
 	group.GET("/event", func(c echo.Context) error {
 		all := storage.All()

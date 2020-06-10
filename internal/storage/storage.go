@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"log"
 	"sync"
 	"time"
 
@@ -25,7 +24,7 @@ func (t *Storage) finishSateRunner() {
 	for {
 		select {
 		case <-t.exitContext.Done():
-			log.Println("Exit gorutine")
+			ticker.Stop()
 			return
 		case <-ticker.C:
 			t.changeStates()
